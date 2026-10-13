@@ -1,0 +1,26 @@
+{
+  "duration_seconds": 5,
+  "clients_started": 3,
+  "logs_per_second_per_client": 20,
+  "sent": 276,
+  "received": 276,
+  "estimated_loss": 0,
+  "throughput_logs_per_second": 55.52,
+  "clients": [
+    {
+      "client_id": "H1",
+      "level": "INFO",
+      "sent": 92
+    },
+    {
+      "client_id": "H2",
+      "level": "WARNING",
+      "sent": 92
+    },
+    {
+      "client_id": "H3",
+      "level": "CRITICAL",
+      "sent": 92
+    }
+  ]
+}

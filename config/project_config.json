@@ -1,0 +1,35 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 9999
+  },
+  "transport": "udp",
+  "log_levels": {
+    "INFO": {
+      "priority": 1,
+      "queue_id": 1
+    },
+    "WARNING": {
+      "priority": 2,
+      "queue_id": 2
+    },
+    "ERROR": {
+      "priority": 2,
+      "queue_id": 2
+    },
+    "CRITICAL": {
+      "priority": 3,
+      "queue_id": 3
+    }
+  },
+  "experiment": {
+    "duration_seconds": 5,
+    "trials": 3,
+    "clients": 3,
+    "logs_per_second_per_client": 20
+  },
+  "switch": {
+    "name": "s1",
+    "openflow_version": "OpenFlow13"
+  }
+}
