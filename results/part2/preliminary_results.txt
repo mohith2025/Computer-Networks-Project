@@ -1,0 +1,21 @@
+# Part 2 — Preliminary Results
+
+## Topology
+- Hosts: H1, H2, H3, HR
+- Switch: s1
+- Network: 10.0.0.0/24
+
+## Connectivity Test
+- Command: `pingall`
+- Result: 0% packet loss (12/12 received)
+- Status: PASS
+
+## Preliminary UDP Test
+- Receiver: 10.0.0.4:9999
+- Client-reported sent logs: 568
+- Receiver-reported valid logs: 551
+- Invalid packets: 0
+- Measurement interval: 20.103 seconds
+- Measured throughput: 18.93 logs/second
+
+**Status:** Preliminary only. The difference between sent and received counts needs investigation. Congestion and priority experiments A–D are not yet complete.
