@@ -1,6 +1,6 @@
 {
   "server": {
-    "host": "127.0.0.1",
+    "host": "10.0.0.4",
     "port": 9999
   },
   "transport": "udp",
@@ -23,7 +23,7 @@
     }
   },
   "experiment": {
-    "duration_seconds": 5,
+    "duration_seconds": 30,
     "trials": 3,
     "clients": 3,
     "logs_per_second_per_client": 20
