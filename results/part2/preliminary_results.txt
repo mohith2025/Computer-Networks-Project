@@ -19,3 +19,15 @@
 - Measured throughput: 18.93 logs/second
 
 **Status:** Preliminary only. The difference between sent and received counts needs investigation. Congestion and priority experiments A–D are not yet complete.
+
+## Experiment A — Baseline UDP Delivery (29 October 2026)
+
+- Topology: H1, H2, H3, HR connected to s1
+- Traffic: H1 sending INFO logs to HR
+- Configured duration: 30 seconds
+- Client-reported sent logs: 561
+- Receiver-reported valid logs: 561
+- Packet loss: 0 logs (0%)
+- Status: PASS for this baseline run
+
+Note: This is one successful baseline run. Congestion and priority experiments B, C, and D remain to be completed.
