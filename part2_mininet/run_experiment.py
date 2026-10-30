@@ -9,6 +9,8 @@ from datetime import datetime
 
 from mininet.net import Mininet
 from mininet.node import OVSBridge
+from mininet.link import TCLink
+
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 RESULT_DIR = PROJECT_DIR / "results" / "part2"
@@ -18,8 +20,6 @@ with open(CONFIG_FILE) as f:
     config = json.load(f)
 
 duration = config["experiment"]["duration_seconds"]
-server_ip = config["server"]["host"]
-server_port = config["server"]["port"]
 
 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
 RESULT_DIR.mkdir(parents=True, exist_ok=True)
@@ -27,97 +27,128 @@ RESULT_DIR.mkdir(parents=True, exist_ok=True)
 result_file = RESULT_DIR / f"experiment_A_{timestamp}.txt"
 server_log = RESULT_DIR / f"server_A_{timestamp}.log"
 
+
 def main():
     net = None
     server = None
     client = None
+    server_output = None
 
     try:
-        with open(result_file, "w") as result:
-            result.write("Experiment A - Baseline UDP Delivery\n")
-            result.write(f"Date: {datetime.now().isoformat()}\n")
-            result.write(f"Duration: {duration} seconds\n")
-            result.write(f"Receiver: {server_ip}:{server_port}\n")
-            result.write("Traffic: H1 sends INFO logs\n\n")
+        print("Starting Mininet topology...")
 
-            print("Starting Mininet topology...")
-            from topology import LogAggregationTopo
-            net = Mininet(
-                topo=LogAggregationTopo(),
-                controller=None,
-                switch=OVSBridge
+        from topology import LogAggregationTopo
+
+        net = Mininet(
+            topo=LogAggregationTopo(),
+            controller=None,
+            switch=OVSBridge,
+            link=TCLink
+        )
+
+        net.start()
+
+        hr = net.get("HR")
+        h1 = net.get("H1")
+
+        server_output = open(server_log, "w")
+
+        print("Starting UDP receiver...")
+
+        server = hr.popen(
+            ["python3", "-u", str(PROJECT_DIR / "part1_app" / "server.py")],
+            cwd=str(PROJECT_DIR),
+            stdout=server_output,
+            stderr=subprocess.STDOUT
+        )
+
+        time.sleep(2)
+
+        if server.poll() is not None:
+            raise RuntimeError("Receiver exited early. Check server log.")
+
+        print("Starting H1 INFO client...")
+
+        client = h1.popen(
+            [
+                "python3", "-u",
+                str(PROJECT_DIR / "part1_app" / "client.py"),
+                "H1", "INFO"
+            ],
+            cwd=str(PROJECT_DIR),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True
+        )
+
+        client_output, _ = client.communicate(timeout=duration + 15)
+
+        if client.returncode != 0:
+            raise RuntimeError(f"Client failed. Output: {client_output}")
+
+        print("Client output:")
+        print(client_output.strip())
+
+        print("Waiting for receiver summary...")
+
+        try:
+            server.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            server.terminate()
+            server.wait(timeout=3)
+
+        server_output.close()
+        server_output = None
+
+        receiver_text = server_log.read_text(errors="replace")
+
+        import re
+
+        summary_match = re.search(
+            r"SUMMARY\|(\d+)\|([\d.]+)\|([\d.]+)",
+            receiver_text
+        )
+
+        if not summary_match:
+            raise RuntimeError(
+                "Receiver summary missing. Check: " + str(server_log)
             )
-            net.start()
 
-            hr = net.get("HR")
-            h1 = net.get("H1")
+        received = int(summary_match.group(1))
+        interval = float(summary_match.group(2))
+        throughput = float(summary_match.group(3))
 
-            print("Starting UDP receiver...")
-            with open(server_log, "w") as server_output:
-                server = hr.popen(
-                    ["python3", "-u", str(PROJECT_DIR / "part1_app" / "server.py")],
-                    cwd=str(PROJECT_DIR),
-                    stdout=server_output,
-                    stderr=subprocess.STDOUT
-                )
+        result_text = (
+            "Experiment A - Baseline Connectivity and Log Delivery\n"
+            f"Date: {datetime.now().isoformat()}\n"
+            f"Duration: {duration} seconds\n"
+            "Client: H1 (INFO)\n"
+            "Link bandwidth: 10 Mbps per host-to-switch link\n\n"
+            f"Receiver total: {received}\n"
+            f"Measurement interval: {interval:.3f} seconds\n"
+            f"Throughput: {throughput:.2f} logs/sec\n"
+        )
 
-                time.sleep(2)
+        result_file.write_text(result_text)
 
-                if server.poll() is not None:
-                    raise RuntimeError(
-                        "Receiver exited early. Check the server log: "
-                        + str(server_log)
-                    )
-
-                print("Sending INFO traffic from H1...")
-                client = h1.popen(
-                    [
-                        "python3", "-u",
-                        str(PROJECT_DIR / "part1_app" / "client.py"),
-                        "H1", "INFO"
-                    ],
-                    cwd=str(PROJECT_DIR),
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True
-                )
-
-                client_output, _ = client.communicate(
-                    timeout=duration + 15
-                )
-                result.write("Client output:\n")
-                result.write(client_output + "\n")
-
-                if client.returncode != 0:
-                    raise RuntimeError("Client failed; see the experiment log.")
-
-                print("Waiting for receiver summary...")
-                try:
-                    server.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    server.terminate()
-                    server.wait(timeout=3)
-
-            result.write("\nReceiver output:\n")
-            result.write(server_log.read_text(errors="replace"))
-            result.write("\n")
-
-            print("Experiment A finished.")
-            print("Results:", result_file)
-            print("Receiver log:", server_log)
-
-    except Exception as error:
-        print("Experiment failed:", error)
-        print("Check logs in:", RESULT_DIR)
-        raise
+        print("\nExperiment A finished.")
+        print(result_text)
+        print("Results:", result_file)
+        print("Receiver log:", server_log)
 
     finally:
         if client is not None and client.poll() is None:
             client.terminate()
+
         if server is not None and server.poll() is None:
             server.terminate()
+
+        if server_output is not None:
+            server_output.close()
+
         if net is not None:
             net.stop()
+
 
 if __name__ == "__main__":
     main()

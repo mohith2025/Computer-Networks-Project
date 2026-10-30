@@ -10,6 +10,8 @@ from datetime import datetime
 
 from mininet.net import Mininet
 from mininet.node import OVSBridge
+from mininet.link import TCLink
+
 
 PROJECT_DIR = Path(__file__).resolve().parent.parent
 RESULT_DIR = PROJECT_DIR / "results" / "part2"
@@ -44,8 +46,10 @@ def main():
         net = Mininet(
             topo=LogAggregationTopo(),
             controller=None,
-            switch=OVSBridge
+            switch=OVSBridge,
+            link=TCLink
         )
+
         net.start()
 
         hr = net.get("HR")
@@ -65,8 +69,10 @@ def main():
             raise RuntimeError("Receiver exited early. Check server log.")
 
         print("Starting three clients...")
+
         for host_name, level in zip(hosts, levels):
             host = net.get(host_name)
+
             process = host.popen(
                 [
                     "python3", "-u",
@@ -78,12 +84,14 @@ def main():
                 stderr=subprocess.STDOUT,
                 text=True
             )
+
             clients.append((host_name, level, process))
 
         client_results = []
 
         for host_name, level, process in clients:
             output, _ = process.communicate(timeout=duration + 15)
+
             match = re.search(r"\|(\w+)\|(\d+)", output)
 
             if not match:
@@ -100,6 +108,7 @@ def main():
                 raise RuntimeError(f"{host_name} client failed.")
 
         print("Waiting for receiver summary...")
+
         try:
             server.wait(timeout=10)
         except subprocess.TimeoutExpired:
@@ -110,6 +119,7 @@ def main():
         server_output = None
 
         receiver_text = server_log.read_text(errors="replace")
+
         summary_match = re.search(
             r"SUMMARY\|(\d+)\|([\d.]+)\|([\d.]+)",
             receiver_text
@@ -132,7 +142,8 @@ def main():
             result.write("Experiment B - Competing UDP Traffic Without Priority\n")
             result.write(f"Date: {datetime.now().isoformat()}\n")
             result.write(f"Duration: {duration} seconds\n")
-            result.write(f"Configured rate per client: {rate} logs/sec\n\n")
+            result.write(f"Configured rate per client: {rate} logs/sec\n")
+            result.write("Link bandwidth: 10 Mbps per host-to-switch link\n\n")
 
             for host_name, level, sent in client_results:
                 result.write(f"{host_name} ({level}) sent: {sent}\n")
@@ -145,7 +156,9 @@ def main():
             result.write(f"Throughput: {throughput:.2f} logs/sec\n")
 
             if lost < 0:
-                result.write("WARNING: Received count exceeds sent count; investigate.\n")
+                result.write(
+                    "WARNING: Received count exceeds sent count; investigate.\n"
+                )
 
         print("\nExperiment B finished.")
         print("Total sent:", total_sent)
