@@ -1,0 +1,34 @@
+Fri Oct 30 10:20:12 PM IST 2026
+===== FLOWS =====
+OFPST_FLOW reply (OF1.3) (xid=0x2):
+ cookie=0x0, duration=359.448s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.4,tp_dst=5001 actions=set_queue:1,set_field:9999->udp_dst,output:4
+ cookie=0x0, duration=359.448s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.4,tp_dst=5002 actions=set_queue:2,set_field:9999->udp_dst,output:4
+ cookie=0x0, duration=359.448s, table=0, n_packets=0, n_bytes=0, priority=10,udp,nw_dst=10.0.0.4,tp_dst=5003 actions=set_queue:3,set_field:9999->udp_dst,output:4
+ cookie=0x0, duration=359.448s, table=0, n_packets=43, n_bytes=3294, priority=0 actions=NORMAL
+===== QOS CONFIG =====
+_uuid               : 7eb028c7-f027-47df-9a5e-ada898f92521
+external_ids        : {}
+other_config        : {max-rate="10000000"}
+queues              : {1=55179ef3-a674-4d29-a0c3-d97a74202865, 2=f3ca9c49-0030-4806-a7dc-e22199d57b7f, 3=bf8c847b-6714-4cc1-acee-0d6b068edcb6}
+type                : linux-htb
+===== QUEUE CONFIG =====
+_uuid               : f3ca9c49-0030-4806-a7dc-e22199d57b7f
+dscp                : []
+external_ids        : {}
+other_config        : {max-rate="10000000", min-rate="3000000"}
+
+_uuid               : 55179ef3-a674-4d29-a0c3-d97a74202865
+dscp                : []
+external_ids        : {}
+other_config        : {max-rate="10000000", min-rate="2000000"}
+
+_uuid               : bf8c847b-6714-4cc1-acee-0d6b068edcb6
+dscp                : []
+external_ids        : {}
+other_config        : {max-rate="10000000", min-rate="5000000"}
+===== QUEUE COUNTERS =====
+OFPST_QUEUE reply (OF1.3) (xid=0x2): 4 queues
+  port 4 queue 0: bytes=0, pkts=0, errors=0, duration=997116710.3762967296s
+  port 4 queue 1: bytes=0, pkts=0, errors=0, duration=997116710.3762967296s
+  port 4 queue 2: bytes=0, pkts=0, errors=0, duration=997116710.3762967296s
+  port 4 queue 3: bytes=0, pkts=0, errors=0, duration=997116710.3762967296s
