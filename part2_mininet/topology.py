@@ -13,10 +13,10 @@ class LogAggregationTopo(Topo):
 
         s1 = self.addSwitch('s1', protocols='OpenFlow13')
 
-        self.addLink(h1, s1, bw=10)
-        self.addLink(h2, s1, bw=10)
-        self.addLink(h3, s1, bw=10)
-        self.addLink(hr, s1, bw=10)
+        self.addLink(h1, s1, bw=1)
+        self.addLink(h2, s1, bw=1)
+        self.addLink(h3, s1, bw=1)
+        self.addLink(hr, s1, bw=1)
 
 
 topos = {
