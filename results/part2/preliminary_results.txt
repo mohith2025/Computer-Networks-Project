@@ -51,3 +51,18 @@ Configuration:
 Observation: All three trials generated competing UDP traffic. Packet loss remained very low. Significant congestion was not demonstrated at this traffic rate.
 
 Status: Three preliminary trials completed. Further load validation may be required.
+
+Experiment B - 1 Mbps Bandwidth Pilot
+Duration: 30 seconds
+Clients: 3
+Configured rate: 500 logs/sec/client
+Link bandwidth: 1 Mbps per host-to-switch link
+
+H1 INFO sent: 7509
+H2 WARNING sent: 7488
+H3 CRITICAL sent: 7573
+Total sent: 22570
+Total received: 21771
+Estimated lost: 799
+Estimated loss percentage: 3.54%
+Throughput: 726.46 logs/sec
