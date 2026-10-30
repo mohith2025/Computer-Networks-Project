@@ -66,3 +66,41 @@ Total received: 21771
 Estimated lost: 799
 Estimated loss percentage: 3.54%
 Throughput: 726.46 logs/sec
+
+
+EXPERIMENT B - FORMAL TRIALS
+Link bandwidth: 1 Mbps per host-to-switch link
+Duration: 30 seconds
+Clients: 3
+Configured rate: 500 logs/sec/client
+Priority: Disabled
+
+Trial 1:
+H1 INFO: 6984
+H2 WARNING: 7038
+H3 CRITICAL: 6843
+Total sent: 20865
+Received: 20317
+Lost: 548
+Loss: 2.63%
+Throughput: 677.74 logs/sec
+
+Trial 2:
+H1 INFO: 6976
+H2 WARNING: 6895
+H3 CRITICAL: 6929
+Total sent: 20800
+Received: 20262
+Lost: 538
+Loss: 2.59%
+Throughput: 675.90 logs/sec
+
+Trial 3:
+H1 INFO: 7643
+H2 WARNING: 7626
+H3 CRITICAL: 7649
+Total sent: 22918
+Received: 22275
+Lost: 643
+Loss: 2.81%
+Throughput: 742.96 logs/sec
