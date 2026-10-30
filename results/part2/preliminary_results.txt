@@ -31,3 +31,23 @@
 - Status: PASS for this baseline run
 
 Note: This is one successful baseline run. Congestion and priority experiments B, C, and D remain to be completed.
+## Experiment B — Competing UDP Traffic Without Priority
+
+Configuration:
+- Duration: 30 seconds
+- Clients: 3
+- Traffic: INFO, WARNING and CRITICAL
+- Configured rate: 20 logs/second/client
+- Total offered rate: 60 logs/second
+
+| Measurement | Trial 1 | Trial 2 | Trial 3 |
+|---|---:|---:|---:|
+| Total sent | 1714 | 1701 | 1705 |
+| Total received | 1712 | 1699 | 1703 |
+| Estimated lost | 2 | 2 | 2 |
+| Loss percentage | 0.12% | 0.12% | 0.12% |
+| Throughput (logs/s) | 57.10 | 56.66 | 56.81 |
+
+Observation: All three trials generated competing UDP traffic. Packet loss remained very low. Significant congestion was not demonstrated at this traffic rate.
+
+Status: Three preliminary trials completed. Further load validation may be required.
