@@ -26,7 +26,7 @@
     "duration_seconds": 30,
     "trials": 3,
     "clients": 3,
-    "logs_per_second_per_client": 100
+    "logs_per_second_per_client": 500
   },
   "switch": {
     "name": "s1",
